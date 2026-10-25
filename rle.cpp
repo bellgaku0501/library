@@ -12,6 +12,8 @@ using vvvl = vector<vector<vector<ll>>>;
 const ll INF = 1LL << 60;
 const ll MOD = 998244353;
 
+
+
 template <typename T = char>
 struct RLE : vector<pair<T, ll>> {
     RLE() {}
@@ -26,27 +28,41 @@ struct RLE : vector<pair<T, ll>> {
     void add(const string& s) { for (char c : s) add(c); }
 };
 
+
+
+/* 
+ * メソッド仕様一覧:
+ * ※ vector<pair<T, ll>> を継承しているため、.size(), .back(), [], range-based for などの標準機能がそのまま使えます。
+ * 
+ * - RLE<char> rle(S); / RLE<ll> rle(A);
+ *   概要  : 文字列 S や配列 A を用いてランレングス圧縮を構築する。
+ *   計算量: O(N) (N は S や A の長さ)
+ * 
+ * - rle.add(x, c);
+ *   概要  : 要素 x を c 個末尾に追加する（デフォルト c=1）。直前の要素と同じなら自動で結合される。
+ *   計算量: 均し O(1)
+ * 
+ * - rle.add(A); / rle.add(S);
+ *   概要  : 別の配列 A や文字列 S を末尾に追加する。境界で同じ要素が連続すれば自動で結合される。
+ *   計算量: O(M) (M は追加する A や S の長さ)
+ */
+
 int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    // N: 元の配列や文字列の長さ
+    // ====================================================
+    // 使用例:
+    // ====================================================
 
-    // ====================================================
-    // 【パターン1】文字列 (string) を圧縮する場合
-    // ====================================================
+    // 【1】文字列 (string) の圧縮
     string S = "aaabbcdddd";
+    RLE<> rle_s(S); // T = char がデフォルト
 
-    // コンストラクタに渡すだけで圧縮完了: O(N)
-    // ※ rle_s 自体が vector<pair<char, ll>> として振る舞う
-    RLE<> rle_s(S);
-
-    // vector標準の .size() で塊の総数を取得: O(1)
-    cout << "Blocks count: " << rle_s.size() << "\n"; // 出力: 4
-
-    // 通常の vector<pair<char, ll>> と全く同じように .first, .second でアクセス: O(1)
+    cout << "--- 文字列のRLE ---" << '\n';
+    cout << "Blocks count: " << rle_s.size() << '\n';
     rep(i, 0, rle_s.size()) {
-        cout << rle_s[i].first << " : " << rle_s[i].second << "\n";
+        cout << rle_s[i].first << " : " << rle_s[i].second << '\n';
     }
     // 出力:
     // a : 3
@@ -55,31 +71,21 @@ int main(){
     // d : 4
 
 
-    // ====================================================
-    // 【パターン2】数値配列 (vl) の圧縮と、動的な追加 (.add)
-    // ====================================================
+    // 【2】数値配列 (vector) の圧縮と動的追加
     vl A = {10, 10, 20, 30, 30, 30};
-
-    // 配列から構築: O(N)
-    // (※ もし純粋な vector<pl> 型として受け取りたいだけなら、
-    //  vector<pl> rle_a = RLE<ll>(A); と書くことも可能)
     RLE<ll> rle_a(A);
 
-    // 末尾に単一要素を追加: 均し O(1)
-    // ※ 直前の要素(30)と同じなので、自動的に 30 の個数が 3 -> 4 に増える
+    // 要素を動的に追加（直前の 30 と自動結合される）
     rle_a.add(30);
-
-    // 末尾に「要素 x を c 個まとめて」追加: 均し O(1)
+    // 大きな個数をまとめて追加
     rle_a.add(50, 1000000000LL);
-
-    // 別の配列を末尾に連結して追加: O(追加する配列の長さ)
+    // 別の配列を追加（先頭の 50 は直前の 50 と自動結合される）
     vl B = {50, 50, 10};
-    rle_a.add(B); // 先頭の 50(2個) は直前の 50(10億個) に自動で吸収される
+    rle_a.add(B);
 
-    // rle_a 自体が vector なので、そのまま範囲for文で回せる: O(塊の数)
-    cout << "\nArray RLE result:\n";
+    cout << "\n--- 配列のRLE（追加後） ---" << '\n';
     for (auto [val, cnt] : rle_a) {
-        cout << val << " x " << cnt << "\n";
+        cout << val << " x " << cnt << '\n';
     }
     // 出力:
     // 10 x 2
@@ -88,7 +94,8 @@ int main(){
     // 50 x 1000000002
     // 10 x 1
 
-    // vectorの標準関数 (.back(), .pop_back() など) もすべてそのまま使える: O(1)
-    cout << "Last block: " << rle_a.back().first << " x " << rle_a.back().second << "\n"; // 出力: 10 x 1
+    cout << "\nLast block: " << rle_a.back().first << " x " << rle_a.back().second << '\n';
+    // 出力: Last block: 10 x 1
 
+    return 0;
 }
