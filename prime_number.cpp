@@ -13,25 +13,22 @@ const ll INF = 1LL << 60;
 const ll MOD = 998244353;
 
 
-// ====================================================
-// 高速素因数分解 (OSA-k法)
-// ====================================================
+
 struct Osa_k {
     int max_n;
-    vector<int> spf; // spf[i] := i の最小の素因数 (Smallest Prime Factor)
+    vector<int> spf;
 
     Osa_k(int max_n) : max_n(max_n), spf(max_n + 1) {
-        iota(all(spf), 0); // 初期状態では spf[i] = i
-        for (int i = 2; i * i <= max_n; i++) {
+        iota(all(spf), 0);
+        for (ll i = 2; i * i <= max_n; i++) {
             if (spf[i] == i) {
-                for (int j = i * i; j <= max_n; j += i) {
+                for (long long j = i * i; j <= max_n; j += i) {
                     if (spf[j] == j) spf[j] = i;
                 }
             }
         }
     }
 
-    // 素因数分解を返す: {素因数, 指数} の配列
     vector<pair<ll, ll>> factorize(ll x) {
         vector<pair<ll, ll>> res;
         if (x <= 1) return res;
@@ -47,16 +44,14 @@ struct Osa_k {
         return res;
     }
 
-    // O(1) 素数判定
     bool is_prime(ll x) {
         if (x <= 1) return false;
         return spf[x] == x;
     }
 };
 
-// ====================================================
-// O(√N) の約数全列挙 (単発の巨大な数用)
-// ====================================================
+
+
 vl get_divisors(ll n) {
     vl res;
     for (ll i = 1; i * i <= n; i++) {
@@ -70,28 +65,48 @@ vl get_divisors(ll n) {
 }
 
 
+
+vector<pair<ll, ll>> prime_factorize(ll n) {
+    vector<pair<ll, ll>> res;
+    for (ll a = 2; a * a <= n; ++a) {
+        if (n % a != 0) continue;
+        ll ex = 0;
+        while (n % a == 0) {
+            ++ex;
+            n /= a;
+        }
+        res.push_back({a, ex});
+    }
+    if (n != 1) res.push_back({n, 1});
+    return res;
+}
+
+
+
 /* 
  * メソッド仕様一覧:
  * 
  * --- Osa_k ---
  * 
  * - Osa_k osak(max_n);
- *   概要  : max_n までの SPF (最小素因数) テーブルを構築。通常 max_n は 10^6 〜 10^7 程度。
+ *   概要  : max_n までの SPF (最小素因数) テーブルを構築。通常 max_n は 10^6 ～ 10^7 程度。
  *   計算量: O(max_n log log max_n) (エラトステネスの篩)
  * 
  * - osak.factorize(x);
  *   概要  : 数値 x を素因数分解し、{素因数, 指数} のペアの配列を返す。
- *           ※ RLE (ランレングス圧縮) と全く同じフォーマットで返却されるため扱いやすい。
  *   計算量: O(log x)
  * 
  * - osak.is_prime(x);
- *   概要  : [独自拡張] spf の値を利用し、数値 x が素数かどうかを O(1) で判定する。
+ *   概要  : 数値 x が素数かどうかを O(1) で判定する。
  * 
- * --- get_divisors ---
+ * --- 単発用 (N <= 10^18) ---
  * 
  * - vl divs = get_divisors(n);
  *   概要  : 数値 n の約数を全て列挙し、昇順にソートした配列を返す。
- *           10^12 などの巨大な数値でも、単発であればこちらを使う。
+ *   計算量: O(√n)
+ * 
+ * - auto factors = prime_factorize(n);
+ *   概要  : 巨大な数値 n を素因数分解し、{素因数, 指数} の配列を返す。
  *   計算量: O(√n)
  */
 
@@ -102,10 +117,7 @@ int main(){
     // ====================================================
     // 使用例1: OSA-k法での高速素因数分解と素数判定
     // ====================================================
-    // 10^6 までの素因数分解を高速に行う準備
     Osa_k osak(1000000);
-
-    // 10080 の素因数分解 (10080 = 2^5 * 3^2 * 5^1 * 7^1)
     ll X = 10080;
     auto factors = osak.factorize(X);
 
@@ -115,22 +127,23 @@ int main(){
         cout << p << "^" << exp << '\n';
     }
 
-    // O(1) 素数判定
     cout << "999983 は素数か？: " << (osak.is_prime(999983) ? "Yes" : "No") << '\n';
 
 
     // ====================================================
-    // 使用例2: 約数全列挙
+    // 使用例2: 約数全列挙 & 素因数分解 (巨大な数)
     // ====================================================
-    // Osa_k ではメモリが足りない 10^12 クラスの巨大な数の約数を列挙
-    ll Y = 1000000000000LL;
+    ll Y = 1000000000000LL; // 10^12
     vl divs = get_divisors(Y);
+    auto p_factors = prime_factorize(Y);
 
-    cout << "\n--- 約数全列挙 ---" << '\n';
+    cout << "\n--- 約数全列挙 & O(√N) 素因数分解 ---" << '\n';
     cout << Y << " の約数の個数: " << divs.size() << '\n';
-    cout << "最小の5つの約数: ";
-    rep(i, 0, min(5, (int)divs.size())) cout << divs[i] << " ";
-    cout << '\n';
+    
+    cout << Y << " の素因数分解:\n";
+    for (auto [p, exp] : p_factors) {
+        cout << p << "^" << exp << '\n';
+    }
 
     return 0;
 }
