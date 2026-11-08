@@ -17,7 +17,6 @@ const ll MOD = 998244353;
 struct Osa_k {
     int max_n;
     vector<int> spf;
-
     Osa_k(int max_n) : max_n(max_n), spf(max_n + 1) {
         iota(all(spf), 0);
         for (ll i = 2; i * i <= max_n; i++) {
@@ -28,7 +27,6 @@ struct Osa_k {
             }
         }
     }
-
     vector<pair<ll, ll>> factorize(ll x) {
         vector<pair<ll, ll>> res;
         if (x <= 1) return res;
@@ -43,14 +41,11 @@ struct Osa_k {
         }
         return res;
     }
-
     bool is_prime(ll x) {
         if (x <= 1) return false;
         return spf[x] == x;
     }
 };
-
-
 
 vl get_divisors(ll n) {
     vl res;
@@ -63,8 +58,6 @@ vl get_divisors(ll n) {
     sort(all(res));
     return res;
 }
-
-
 
 vector<pair<ll, ll>> prime_factorize(ll n) {
     vector<pair<ll, ll>> res;
@@ -80,7 +73,6 @@ vector<pair<ll, ll>> prime_factorize(ll n) {
     if (n != 1) res.push_back({n, 1});
     return res;
 }
-
 
 
 /* 

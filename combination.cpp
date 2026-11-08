@@ -12,6 +12,8 @@ using vvvl = vector<vector<vector<ll>>>;
 const ll INF = 1LL << 60;
 const ll MOD = 998244353;
 
+
+
 using mint = modint998244353;
 
 struct Comb {
@@ -36,22 +38,20 @@ struct Comb {
         if (n <= 0 || r < 0) return 0;
         return nCr(n + r - 1, r);
     }
-    // [独自拡張] 階乗 n!
     mint fac(int n) {
         if (n < 0 || n > max_n) return 0;
         return fact[n];
     }
-    // [独自拡張] 階乗の逆元 (n!)^-1
     mint finv(int n) {
         if (n < 0 || n > max_n) return 0;
         return fact_inv[n];
     }
-    // [独自拡張] 単一の逆元 n^-1 を O(1) で取得
     mint inv(int n) {
         if (n <= 0 || n > max_n) return 0;
         return fact_inv[n] * fact[n - 1];
     }
 };
+
 
 
 /* 

@@ -20,17 +20,14 @@ struct RollingHash {
     static const uint64_t mod = (1ULL << 61) - 1;
     uint64_t base;
     vector<uint64_t> hash, power;
-
     static inline uint64_t generate_base() {
         mt19937_64 mt(chrono::steady_clock::now().time_since_epoch().count());
         uniform_int_distribution<uint64_t> rand(1, mod - 1);
         return rand(mt);
     }
-
     inline uint64_t mul(uint64_t a, uint64_t b) const {
         return (uint64_t)((__uint128_t)a * b % mod);
     }
-
     RollingHash() {}
     RollingHash(const string &s, uint64_t b = 0) {
         if (b == 0) b = generate_base();
@@ -43,13 +40,11 @@ struct RollingHash {
             power[i + 1] = mul(power[i], base);
         }
     }
-
     uint64_t query(ll l, ll r) const {
         uint64_t res = hash[r] + mod - mul(hash[l], power[r - l]);
         if (res >= mod) res -= mod;
         return res;
     }
-
     uint64_t combine(uint64_t h1, uint64_t h2, ll len2) const {
         uint64_t res = mul(h1, power[len2]) + h2;
         if (res >= mod) res -= mod;

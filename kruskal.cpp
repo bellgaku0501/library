@@ -13,9 +13,7 @@ const ll INF = 1LL << 60;
 const ll MOD = 998244353;
 
 
-// ====================================================
-// 拡張 Union-Find (クラスカル法の内部で使用)
-// ====================================================
+
 struct UnionFind {
     ll n, comp_cnt;
     vl parent_or_size, edges;
@@ -39,47 +37,33 @@ struct UnionFind {
     ll edge_cnt(ll x) { return edges[leader(x)]; }
 };
 
-// ====================================================
-// クラスカル法 (最小全域木)
-// ====================================================
 struct Kruskal {
     struct Edge {
         ll u, v, cost, id;
-        // コストの昇順にソートするための比較演算子
         bool operator<(const Edge& other) const {
             return cost < other.cost;
         }
     };
-
     ll n;
     vector<Edge> edges;
-    vector<Edge> mst_edges; // MSTに採用された辺のリスト
-    ll mst_cost;            // MSTの総コスト
-    bool is_connected;      // グラフ全体が連結になったかどうか
-
+    vector<Edge> mst_edges;
+    ll mst_cost;
+    bool is_connected;
     Kruskal(ll n) : n(n), mst_cost(0), is_connected(false) {}
-
-    // 辺の追加 (id は入力順などを記憶しておくために使う)
     void add_edge(ll u, ll v, ll cost, ll id = -1) {
         edges.push_back({u, v, cost, id});
     }
-
-    // 最小全域木の構築 O(E log E)
     ll build() {
         sort(all(edges));
         UnionFind uf(n);
         mst_cost = 0;
         mst_edges.clear();
-
         for (const auto& e : edges) {
-            // 閉路を作らない（まだ繋がっていない）なら辺を採用
             if (uf.merge(e.u, e.v)) {
                 mst_cost += e.cost;
                 mst_edges.push_back(e);
             }
         }
-        
-        // 全ての頂点が1つの連結成分になったかを判定 (Union-Find の機能を利用)
         is_connected = (uf.comp_cnt == 1);
         return mst_cost;
     }

@@ -16,29 +16,24 @@ const ll MOD = 998244353;
 struct LCA {
     ll n, log_size;
     vvl G;
-    vvl parent; // parent[k][v] := 頂点 v から 2^k 回親をたどった頂点
+    vvl parent;
     vl depth;
     bool built;
-
     LCA(ll n) : n(n), G(n), depth(n, 0), built(false) {
         log_size = 1;
         while ((1LL << log_size) < n) log_size++;
         parent.assign(log_size, vl(n, -1));
     }
-
     void add_edge(ll u, ll v) {
         G[u].push_back(v);
         G[v].push_back(u);
     }
-
     void build(ll root = 0) {
         built = true;
         vl dist(n, -1);
         queue<ll> q;
         q.push(root);
         dist[root] = 0;
-        
-        // BFSで深さと1個上の親を初期化
         while (!q.empty()) {
             ll v = q.front(); q.pop();
             for (ll u : G[v]) {
@@ -50,8 +45,6 @@ struct LCA {
             }
         }
         depth = dist;
-
-        // ダブリングで 2^k 個上の親を計算
         rep(k, 0, log_size - 1) {
             rep(v, 0, n) {
                 if (parent[k][v] < 0) parent[k + 1][v] = -1;
@@ -59,20 +52,15 @@ struct LCA {
             }
         }
     }
-
     ll get(ll u, ll v) {
         if (!built) build();
         if (depth[u] < depth[v]) swap(u, v);
-        
-        // 1. まず深さを揃える
         rep(k, 0, log_size) {
             if ((depth[u] - depth[v]) >> k & 1) {
                 u = parent[k][u];
             }
         }
         if (u == v) return u;
-        
-        // 2. ギリギリ共通祖先にならない場所まで同時に遡る
         for (int k = log_size - 1; k >= 0; k--) {
             if (parent[k][u] != parent[k][v]) {
                 u = parent[k][u];
@@ -81,14 +69,10 @@ struct LCA {
         }
         return parent[0][u];
     }
-
-    // [独自拡張] 2頂点間の最短距離
     ll dist(ll u, ll v) {
         if (!built) build();
         return depth[u] + depth[v] - 2 * depth[get(u, v)];
     }
-
-    // [独自拡張] 頂点 v から k 個上の祖先を取得 (存在しない場合は -1)
     ll la(ll v, ll k) {
         if (!built) build();
         rep(i, 0, log_size) {

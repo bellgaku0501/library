@@ -22,19 +22,14 @@ struct PolarComp {
         if (y > 0 || (y == 0 && x > 0)) return 1;
         return 2;
     }
-
     bool operator()(const pair<ll, ll>& a, const pair<ll, ll>& b) const {
         auto [xa, ya] = a;
         auto [xb, yb] = b;
-        
         int area_a = area(xa, ya);
         int area_b = area(xb, yb);
-        
         if (area_a != area_b) return area_a < area_b;
-        
         ll cross = xa * yb - ya * xb;
         if (cross != 0) return cross > 0;
-        
         return (xa * xa + ya * ya) < (xb * xb + yb * yb);
     }
 };

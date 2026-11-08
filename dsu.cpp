@@ -18,15 +18,11 @@ struct UnionFind {
     vl parent_or_size, edges;
     UnionFind(ll n) : n(n), comp_cnt(n), parent_or_size(n, -1), edges(n, 0) {}
     
-    // [ACL互換] 代表元の取得
     ll leader(ll x) {
         if (parent_or_size[x] < 0) return x;
         return parent_or_size[x] = leader(parent_or_size[x]);
     }
     
-    // [ACL互換(一部拡張)] 併合
-    // ※ ACLは新しいleaderを返すが、実戦ではマージが発生したかのboolを返す方が
-    //   クラスカル法などで使いやすいためbool型にしています
     bool merge(ll x, ll y) {
         ll rx = leader(x), ry = leader(y);
         if (rx == ry) { edges[rx]++; return false; }
@@ -38,16 +34,12 @@ struct UnionFind {
         return true;
     }
     
-    // [ACL互換] 所属判定
     bool same(ll x, ll y) { return leader(x) == leader(y); }
     
-    // [ACL互換] 連結成分のサイズ
     ll size(ll x) { return -parent_or_size[leader(x)]; }
     
-    // [独自] 連結成分の辺の数
     ll edge_cnt(ll x) { return edges[leader(x)]; }
     
-    // [ACL互換] グラフを連結成分ごとに分けた二次元配列を返す
     vvl groups() {
         vl leader_buf(n), group_size(n, 0);
         rep(i, 0, n) {

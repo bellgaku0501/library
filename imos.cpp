@@ -19,7 +19,6 @@ struct Imos {
     vector<T> v;
     Imos(int n) : n(n), v(n + 1, 0) {}
     
-    // 半開区間 [l, r) に val を加算
     void add(int l, int r, T val = 1) {
         if (l < 0) l = 0;
         if (r > n) r = n;
@@ -28,7 +27,6 @@ struct Imos {
         v[r] -= val;
     }
     
-    // 全ての加算クエリが終わった後に1回だけ呼んで構築する
     void build() {
         rep(i, 0, n) v[i + 1] += v[i];
     }
@@ -45,7 +43,6 @@ struct Imos2D {
     vector<vector<T>> v;
     Imos2D(int h, int w) : h(h), w(w), v(h + 1, vector<T>(w + 1, 0)) {}
     
-    // 2次元半開区間 [y1, y2) × [x1, x2) に val を加算
     void add(int y1, int x1, int y2, int x2, T val = 1) {
         if (y1 < 0) y1 = 0;
         if (y2 > h) y2 = h;
@@ -59,10 +56,9 @@ struct Imos2D {
         v[y2][x2] += val;
     }
     
-    // 全ての加算クエリが終わった後に1回だけ呼んで構築する
     void build() {
-        rep(i, 0, h + 1) rep(j, 0, w) v[i][j + 1] += v[i][j]; // 横方向の累積和
-        rep(j, 0, w + 1) rep(i, 0, h) v[i + 1][j] += v[i][j]; // 縦方向の累積和
+        rep(i, 0, h + 1) rep(j, 0, w) v[i][j + 1] += v[i][j];
+        rep(j, 0, w + 1) rep(i, 0, h) v[i + 1][j] += v[i][j];
     }
     
     T get(int y, int x) { return v[y][x]; }

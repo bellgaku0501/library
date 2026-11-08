@@ -19,24 +19,18 @@ struct TopologicalSort {
     vl in_degree;
     vl order;
     bool is_dag;
-
     TopologicalSort(ll n) : n(n), G(n), in_degree(n, 0), is_dag(false) {}
-
     void add_edge(ll u, ll v) {
         G[u].push_back(v);
         in_degree[v]++;
     }
-
-    // 通常のトポロジカルソート O(V + E)
     bool build() {
         order.clear();
         queue<ll> q;
-        vl deg = in_degree; // 何度も実行できるようにコピーを使う
-        
+        vl deg = in_degree;
         rep(i, 0, n) {
             if (deg[i] == 0) q.push(i);
         }
-
         while (!q.empty()) {
             ll u = q.front(); 
             q.pop();
@@ -48,17 +42,13 @@ struct TopologicalSort {
         is_dag = (order.size() == (size_t)n);
         return is_dag;
     }
-
-    // 辞書順最小のトポロジカルソート O(V log V + E)
     bool build_lex() {
         order.clear();
         priority_queue<ll, vl, greater<ll>> pq;
         vl deg = in_degree;
-        
         rep(i, 0, n) {
             if (deg[i] == 0) pq.push(i);
         }
-
         while (!pq.empty()) {
             ll u = pq.top(); 
             pq.pop();
